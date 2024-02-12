@@ -1,0 +1,14 @@
+{
+    "builds": [
+      {
+        "src": "pedalpal/wsgi.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "pedalpal/wsgi.py"
+      }
+    ]
+}
