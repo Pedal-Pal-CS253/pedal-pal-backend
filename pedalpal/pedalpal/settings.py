@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +29,7 @@ SECRET_KEY = "django-insecure-=)e7ya2-f_cp_co&4y)x97g1mzpv(onfcq^*8!w75g==@&opr2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".vercel.app", "127.0.0.1:8000"]
+ALLOWED_HOSTS = [".vercel.app", "127.0.0.1"]
 
 
 # Application definition
@@ -76,10 +80,14 @@ WSGI_APPLICATION = "pedalpal.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.sqlite3",
-    #     "NAME": BASE_DIR / "db.sqlite3",
-    # }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DATABASE"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_DB_PORT"),
+    }
 }
 
 
@@ -123,3 +131,6 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
