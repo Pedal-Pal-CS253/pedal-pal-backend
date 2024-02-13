@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [".vercel.app", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    "custom",
     "adminlte3",
     "adminlte3_theme",
     "django.contrib.admin",
@@ -43,6 +44,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
