@@ -1,12 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
+
 def getRoutes(requests):
-    routes = [
-        {
-            
-        }
-    ]
-    
+    routes = [{}]
+
     return JsonResponse()
-    
