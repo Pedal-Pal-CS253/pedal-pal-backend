@@ -29,5 +29,15 @@ class Profile(models.Model):
         return f"{self.user.username} Profile"
 
 
-class wallet(models.Model):
-    balance = models.IntegerField(_(""))
+class Wallet(models.Model):
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    balance = models.DecimalField(("balance"), max_digits=100, decimal_places=2)
+    account_name = models.CharField(("account name"), max_length=250)
+    account_number = models.CharField(("account number"), max_length=100)
+    bank = models.CharField(("bank"), max_length=100)
+    phone_number = models.CharField(_("phone number"), max_length=15)
+    password = models.CharField(_("password"), max_length=200)
+    created = models.DateTimeField(auto_now_add=True)
+    
+
