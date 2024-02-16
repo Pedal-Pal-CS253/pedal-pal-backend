@@ -36,8 +36,9 @@ class Wallet(models.Model):
     account_name = models.CharField(("account name"), max_length=250)
     account_number = models.CharField(("account number"), max_length=100)
     bank = models.CharField(("bank"), max_length=100)
-    phone_number = models.CharField(_("phone number"), max_length=15)
-    password = models.CharField(_("password"), max_length=200)
+    phone_number = models.CharField(("phone number"), max_length=15)
+    password = models.CharField(("password"), max_length=200)
     created = models.DateTimeField(auto_now_add=True)
     
-
+    def _str_(self):
+        return f"{self.user.username} Wallet"
