@@ -16,17 +16,49 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_resident', models.BooleanField()),
-                ('is_subscriber', models.BooleanField()),
-                ('subscription_end', models.DateField()),
-                ('mob_no', phonenumber_field.modelfields.PhoneNumberField(max_length=128, region=None)),
-                ('image', models.ImageField(default='default.jpg', upload_to='profile_pics')),
-                ('session', models.BooleanField(default='false')),
-                ('start_hub', models.CharField(choices=[('RM', 'RM'), ('H6', 'Hall 6'), ('LH20', 'Lecture Hall 20')], max_length=10)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("is_resident", models.BooleanField()),
+                ("is_subscriber", models.BooleanField()),
+                ("subscription_end", models.DateField()),
+                (
+                    "mob_no",
+                    phonenumber_field.modelfields.PhoneNumberField(
+                        max_length=128, region=None
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(default="default.jpg", upload_to="profile_pics"),
+                ),
+                ("session", models.BooleanField(default="false")),
+                (
+                    "start_hub",
+                    models.CharField(
+                        choices=[
+                            ("RM", "RM"),
+                            ("H6", "Hall 6"),
+                            ("LH20", "Lecture Hall 20"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

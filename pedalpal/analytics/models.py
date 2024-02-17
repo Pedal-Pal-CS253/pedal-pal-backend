@@ -13,6 +13,6 @@ class Wallet(models.Model):
     phone_number = models.CharField(("phone number"), max_length=15)
     password = models.CharField(("password"), max_length=200)
     created = models.DateTimeField(auto_now_add=True)
-    
+
     def _str_(self):
         return f"{self.user.username} Wallet"
