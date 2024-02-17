@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "custom",
     "adminlte3",
     "adminlte3_theme",
+    "phonenumber_field",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

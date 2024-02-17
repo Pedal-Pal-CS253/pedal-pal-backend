@@ -1,7 +1,7 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.models import User
-
+import uuid
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -17,13 +17,13 @@ class Profile(models.Model):
     session = models.BooleanField(default="false")
     # to see if session is on or not
 
-    HUBS = {
-        "RM": "RM",
-        "Hall6": "Hall6",
-        "LH20": "Lecture Hall 20",
-    }
+    HUBS = [
+        ("RM", "RM"),
+        ("H6", "Hall 6"),
+        ("LH20", "Lecture Hall 20"),
+    ]
 
-    start_hub = models.CharField(max_length=1, choices=HUB)
+    start_hub = models.CharField(max_length=10, choices=HUBS)
 
     def _str_(self):
         return f"{self.user.username} Profile"
