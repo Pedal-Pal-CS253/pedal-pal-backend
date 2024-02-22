@@ -35,7 +35,10 @@ ALLOWED_HOSTS = [".vercel.app", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
-    "custom",
+    "analytics",
+    "authentication",
+    "booking",
+    "maintenance",
     "adminlte3",
     "adminlte3_theme",
     "phonenumber_field",
