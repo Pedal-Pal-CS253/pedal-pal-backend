@@ -22,8 +22,8 @@ class Profile(models.Model):
         ("H6", "Hall 6"),
         ("LH20", "Lecture Hall 20"),
     ]
-
-    start_hub = models.CharField(max_length=10, choices=HUBS)
+    # define hubs later somewhere else
+    curr_start_hub = models.CharField(max_length=20, choices=HUBS, blank="true")
 
     def _str_(self):
         return f"{self.user.username} Profile"
