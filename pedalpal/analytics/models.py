@@ -25,7 +25,7 @@ class Wallet(models.Model):
 
 
 class Statistics(models.Model):
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(Profile, on_delete=models.SET_NULL, null=True)
     # rides= Ride._meta.model.objects.all()\
     cost = models.DecimalField(("cost"), max_digits=100, decimal_places=2)
     rides = models.IntegerField()
