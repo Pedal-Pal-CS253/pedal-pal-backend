@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from rest_framework import generics
+from maintenance.models import Feedback
+from maintenance.serializers import FeedbackSerializer
+from maintenance.permissions import IsAdmin
 
-# Create your views here.
+
+class FeedbackList(generics.ListCreateAPIView):
+    permission_classes = [IsAdmin]
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+
+
+# TODO: Add view to add user feedback
