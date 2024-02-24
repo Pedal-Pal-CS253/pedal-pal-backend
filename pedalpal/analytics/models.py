@@ -14,5 +14,22 @@ class Wallet(models.Model):
     password = models.CharField(("password"), max_length=200)
     created = models.DateTimeField(auto_now_add=True)
 
+    def pay():
+        pass
+
+    def add_money():
+        pass
+
     def _str_(self):
         return f"{self.user.username} Wallet"
+
+
+class Statistics(models.Model):
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    # rides= Ride._meta.model.objects.all()
+
+
+class Stats(models.Model):
+    cost = models.DecimalField(("cost"), max_digits=100, decimal_places=2)
+    rides = models.IntegerField()
+    duration = models.DurationField()
