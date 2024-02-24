@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "authentication",
     "booking",
     "maintenance",
+    "payment",
     "adminlte3",
     "adminlte3_theme",
     "phonenumber_field",
