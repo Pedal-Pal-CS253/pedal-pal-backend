@@ -8,3 +8,6 @@ class FeedbackList(generics.ListCreateAPIView):
     permission_classes = [IsAdmin]
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
+
+
+# TODO: Add view to add user feedback
