@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from authentication import Profile
+from authentication.models import Profile
 
 
 class Wallet(models.Model):
