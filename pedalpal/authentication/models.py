@@ -43,9 +43,9 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=50, null=True)
     phone = models.CharField(max_length=15)
     is_subscribed = models.BooleanField(default=False)
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    ride_active = models.BooleanField(default=False)
 
     objects = ProfileManager()
 
@@ -56,6 +56,13 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     user_permissions = models.ManyToManyField(
         "auth.Permission", related_name="profile_users"
     )
+
+    def is_ride_active(self):
+        return self.ride_active
+
+    def set_ride_active(self, value):
+        self.ride_active = value
+        self.save()
 
     def __str__(self):
         return self.email

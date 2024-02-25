@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Hub, Cycle, Ride
 
-# Register your models here.
+admin.site.register(Hub)
+admin.site.register(Cycle)
+admin.site.register(Ride)
