@@ -19,6 +19,9 @@ class Cycle(models.Model):
     status = models.CharField(max_length=20)
     lock = models.CharField(max_length=64)  # TODO: change later
 
+    def is_booked(self):
+        return self.status == "booked"
+
 
 class Ride(models.Model):
     ride_id = models.UUIDField(primary_key=True)
