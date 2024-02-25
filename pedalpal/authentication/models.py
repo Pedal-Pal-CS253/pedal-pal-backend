@@ -28,10 +28,11 @@ class ProfileManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
             phone=phone,
-            password=password,
         )
         user.is_staff = True
         user.is_superuser = True
+
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
@@ -49,7 +50,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     objects = ProfileManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["phone"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "phone"]
 
     groups = models.ManyToManyField("auth.Group", related_name="profile_users")
     user_permissions = models.ManyToManyField(
