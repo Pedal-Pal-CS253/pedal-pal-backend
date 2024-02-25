@@ -13,6 +13,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "phone",
             "password",
             "is_subscribed",
+            "ride_active",
         )
         extra_kwargs = {
             "password": {"write_only": True},
