@@ -1,29 +1,60 @@
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
-from django.contrib.auth.models import User
-from phonenumber_field.modelfields import PhoneNumberField
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    is_resident = models.BooleanField()
-    is_subscriber = models.BooleanField()
-    subscription_end = models.DateField()
-    mob_no = PhoneNumberField()
-    # https://stackoverflow.com/questions/19130942/whats-the-best-way-to-store-a-phone-number-in-django-models
-    image = models.ImageField(default="default.jpg", upload_to="profile_pics")
-    # images present in 'profile_pics' directory, follow this:
-    # https://medium.com/jungletronics/a-django-blog-in-vs-code-6dee94cec9c0
+class ProfileManager(BaseUserManager):
+    def create_user(self, email, first_name, last_name, phone, password=None):
+        if not email:
+            raise ValueError("Users must have an email address")
 
-    session = models.BooleanField(default="false")
-    # to see if session is on or not
+        user = self.model(
+            email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+        )
 
-    HUBS = [
-        ("RM", "RM"),
-        ("H6", "Hall 6"),
-        ("LH20", "Lecture Hall 20"),
-    ]
-    # define hubs later somewhere else
-    curr_start_hub = models.CharField(max_length=20, choices=HUBS, blank="true")
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-    def _str_(self):
-        return f"{self.user.username} Profile"
+    def create_superuser(self, email, first_name, last_name, phone, password):
+        user = self.create_user(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            password=password,
+        )
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+
+class Profile(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=50, null=True, default="User")
+    last_name = models.CharField(max_length=50, null=True)
+    phone = models.CharField(max_length=15)
+    is_subscribed = models.BooleanField(default=False)
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = ProfileManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["phone"]
+
+    groups = models.ManyToManyField("auth.Group", related_name="profile_users")
+    user_permissions = models.ManyToManyField(
+        "auth.Permission", related_name="profile_users"
+    )
+
+    def __str__(self):
+        return self.email
