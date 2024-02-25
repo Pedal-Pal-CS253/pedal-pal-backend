@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("maintenance.urls")),
     path("admin/", admin.site.urls, name="admin"),
     path("logout/", views.admin_logout, name="logout"),
+    path("auth/", include("authentication.urls")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
