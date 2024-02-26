@@ -66,3 +66,26 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class ResetPasswordEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+
+
+class BlankUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = []
+
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ("first_name", "last_name", "phone")
+
+    def validate(self, data):
+        first_name = data.get("first_name")
+        last_name = data.get("last_name")
+        phone = data.get("phone")
+
+        if first_name is None and last_name is None and phone is None:
+            raise serializers.ValidationError(
+                "At least one field must be provided to update the profile"
+            )
+        return data

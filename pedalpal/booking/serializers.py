@@ -20,6 +20,18 @@ class BookRideSerializer(serializers.ModelSerializer):
         model = Ride
         fields = ["cycle", "start_time"]
 
+
+class BookLaterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ride
+        fields = ["cycle", "start_time", "end_time"]
+
+
+class BookLaterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ride
+        fields = ["cycle", "start_time", "end_time"]
+
     
 class HubSerializer(serializers.ModelSerializer):
     class Meta:
