@@ -102,7 +102,7 @@ class ViewsAPI(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         queryset = Hub.objects.all()
         serializer_class = HubSerializer
-        available_cycles = Hub.objects.annotate(num_available=Count('cycle', filter=Q(cycle__booked=False))).values_list('id', flat=True)
+        available_cycles = Hub.objects.annotate(num_available=Count('cycle', filter=Q(cycle__booked=False) & Q(cycle__active=False))).values_list('id', flat=True)
         hub_data = serializer_class(queryset, many=True).data
         for hub in hub_data:
             hub['available'] = available_cycles[hub_data.index(hub)]
