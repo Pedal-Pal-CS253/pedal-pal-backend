@@ -14,13 +14,18 @@ class Cycle(models.Model):
     hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
     booked = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
     lock = models.CharField(max_length=64)  # TODO: change later
 
     def is_booked(self):
         return self.booked
 
-    def book(self, user):
+    def is_active(self):
+        return self.active
+
+    def bookNow(self, user):
         self.booked = True
+        self.active = True
         self.user = user
         self.save()
 
