@@ -4,5 +4,5 @@ from django.urls import path
 from .views import ViewsAPI
 
 urlpatterns = [
-    path("view/", ViewsAPI.as_view(), name="View_Hubs"),
+    path("view/", ViewsAPI.as_view()),
 ]
