@@ -57,3 +57,12 @@ class LoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError("User does not exist.")
         else:
             raise serializers.ValidationError("Must include 'username' and 'password'.")
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+
+class ResetPasswordEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
