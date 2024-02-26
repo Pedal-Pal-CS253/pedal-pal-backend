@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from booking.models import Cycle, Ride
+from booking.models import Hub
 
 
 class CycleSerializer(serializers.ModelSerializer):
@@ -18,3 +19,9 @@ class BookRideSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ride
         fields = ["cycle", "start_time"]
+
+    
+class HubSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hub
+        fields = '__all__'
