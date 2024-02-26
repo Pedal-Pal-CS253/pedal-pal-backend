@@ -1,10 +1,17 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
-from .serializers import ProfileSerializer, RegisterSerializer, LoginSerializer
+from .serializers import (
+    ProfileSerializer,
+    RegisterSerializer,
+    LoginSerializer,
+    ChangePasswordSerializer,
+)
 from django.contrib.auth import login
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import update_session_auth_hash
 
 
 class RegisterAPI(generics.GenericAPIView):
@@ -42,17 +49,22 @@ class LoginAPI(generics.GenericAPIView):
         )
 
 
-class PasswordResetAPI(PasswordResetView):
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class PasswordResetConfirmAPI(PasswordResetConfirmView):
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    if request.method == "POST":
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            if user.check_password(serializer.data.get("old_password")):
+                user.set_password(serializer.data.get("new_password"))
+                user.save()
+                update_session_auth_hash(request, user)
+                return Response(
+                    {"message": "Password changed successfully."},
+                    status=status.HTTP_200_OK,
+                )
+            return Response(
+                {"error": "Incorrect old password."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

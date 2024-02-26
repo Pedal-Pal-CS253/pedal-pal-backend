@@ -1,14 +1,9 @@
 # urls.py
 from django.urls import path
-from .views import RegisterAPI, LoginAPI, PasswordResetAPI, PasswordResetConfirmAPI
+from .views import RegisterAPI, LoginAPI, change_password
 
 urlpatterns = [
-    path("register/", RegisterAPI.as_view(), name="Userregister"),
-    path("login/", LoginAPI.as_view(), name="Userlogin"),
-    path("password-reset/", PasswordResetAPI.as_view(), name="User_password_reset"),
-    path(
-        "password-reset/confirm/",
-        PasswordResetConfirmAPI.as_view(),
-        name="User_password_reset_confirm",
-    ),
+    path("register/", RegisterAPI.as_view(), name="User_register"),
+    path("login/", LoginAPI.as_view(), name="User_login"),
+    path("change_password/", change_password, name="change_password"),
 ]
