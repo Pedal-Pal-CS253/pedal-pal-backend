@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from booking.models import Cycle, Ride
+from booking.models import Cycle, Ride, Lock
 
 
 class CycleSerializer(serializers.ModelSerializer):
@@ -19,8 +19,12 @@ class BookRideSerializer(serializers.ModelSerializer):
         model = Ride
         fields = ["cycle", "start_time"]
 
-
 class BookLaterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ride
         fields = ["cycle", "start_time", "end_time"]
+
+class EndRideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lock
+        fields = ["hub"]
