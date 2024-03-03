@@ -3,8 +3,13 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import authentication
 from django.http.response import JsonResponse
-from booking.models import Cycle, Ride
-from booking.serializers import BookRideSerializer, RideSerializer, EndRideSerializer
+from booking.models import Cycle, Ride, Booking
+from booking.serializers import (
+    BookRideSerializer,
+    RideSerializer,
+    BookLaterSerializer,
+    EndRideSerializer,
+)
 import datetime
 
 
@@ -50,7 +55,7 @@ class BookNowAPI(generics.GenericAPIView):
 
 
 class BookLaterAPI(generics.GenericAPIView):
-    serializer_class = BookRideSerializer
+    serializer_class = BookLaterSerializer
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (authentication.TokenAuthentication,)
 
@@ -65,20 +70,19 @@ class BookLaterAPI(generics.GenericAPIView):
                 {"message": "Cycle already booked"}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        cycle.book(user)
+        cycle.book_later(user)
 
-        ride = Ride.objects.create(
+        start_time = datetime.datetime.now()
+        booking = Booking.objects.create(
             user=user,
             cycle=cycle,
-            start_time=serializer.validated_data.get("start_time"),
+            start_time=start_time,
             end_time=None,
-            start_hub=cycle.hub,
-            end_hub=None,
-            time=0,
+            cancelled=False,
             payment_id=None,
         )
 
-        serializer = RideSerializer(ride)
+        serializer = BookLaterSerializer(booking)
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -92,8 +96,8 @@ class EndRideAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         cycle = serializer.validated_data.get("cycle")
         user = request.user
-        
+
         ride = Ride.objects.filter(user=user)
-        ride.end_ride( datetime.now, serializer_class.lock)
-        
+        ride.end_ride(datetime.now, serializer_class.lock)
+
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)

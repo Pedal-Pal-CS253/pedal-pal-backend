@@ -9,4 +9,3 @@ class Payment(models.Model):
 
     def __str__(self):
         return str(self.payment_id)
-

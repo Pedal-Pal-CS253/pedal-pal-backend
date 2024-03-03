@@ -47,7 +47,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     ride_active = models.BooleanField(default=False)
     balance = models.IntegerField(default=0)
-    
 
     objects = ProfileManager()
 

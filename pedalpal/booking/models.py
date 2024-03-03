@@ -2,7 +2,7 @@ from django.db import models
 from authentication.models import Profile
 from payment.models import Payment
 
-COST_PER_UNIT_TIME=1
+COST_PER_UNIT_TIME = 1
 
 
 class Hub(models.Model):
@@ -10,6 +10,7 @@ class Hub(models.Model):
     max_capacity = models.IntegerField()
     latitude = models.FloatField()
     longitude = models.FloatField()
+
 
 class Cycle(models.Model):
     hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
@@ -23,16 +24,22 @@ class Cycle(models.Model):
     def is_active(self):
         return self.active
 
-    def bookNow(self, user):
+    def book_now(self, user):
         self.booked = True
         self.active = True
         self.user = user
         self.save()
 
+    def book_later(self, user):
+        self.booked = True
+        self.active = False
+        self.user = user
+        self.save()
+
+
 class Lock(models.Model):
-    cycle = models.OneToOneField(Cycle,on_delete=models.CASCADE)
-    hub = models.OneToOneField(Hub,on_delete=models.CASCADE)
-    
+    cycle = models.OneToOneField(Cycle, on_delete=models.CASCADE)
+    hub = models.OneToOneField(Hub, on_delete=models.CASCADE)
 
 
 class Ride(models.Model):
@@ -57,13 +64,13 @@ class Ride(models.Model):
         Payment, on_delete=models.CASCADE, null=True, blank=True
     )
 
-    def end_ride(self, end_time,lock):
+    def end_ride(self, end_time, lock):
         self.cycle.hub = lock.hub
-        self.cycle.user=None
-        self.cycle.active=False
-        self.end_time=end_time
+        self.cycle.user = None
+        self.cycle.active = False
+        self.end_time = end_time
         self.user.set_ride_active(False)
-        self.cost = (end_time-start_time)*COST_PER_UNIT_TIME
+        self.cost = (self.end_time - self.start_time) * COST_PER_UNIT_TIME
         lock.cycle = self.cycle
         lock.save()
         self.cycle.save()
@@ -75,10 +82,7 @@ class Booking(models.Model):
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(blank=True, null=True)
-    status = models.CharField(max_length=20)
+    cancelled = models.BooleanField(default=False)
     payment = models.ForeignKey(
         Payment, on_delete=models.CASCADE, blank=True, null=True
     )
-
-    def __str__(self):
-        return str(self.booking_id)
