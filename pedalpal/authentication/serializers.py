@@ -5,16 +5,7 @@ from .models import Profile
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = (
-            "id",
-            "email",
-            "first_name",
-            "last_name",
-            "phone",
-            "password",
-            "is_subscribed",
-            "ride_active",
-        )
+        fields = "__all__"
         extra_kwargs = {
             "password": {"write_only": True},
             "is_subscribed": {"read_only": True},

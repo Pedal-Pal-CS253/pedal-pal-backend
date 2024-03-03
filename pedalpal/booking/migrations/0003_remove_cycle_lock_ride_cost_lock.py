@@ -7,25 +7,43 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('booking', '0002_cycle_active'),
+        ("booking", "0002_cycle_active"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='cycle',
-            name='lock',
+            model_name="cycle",
+            name="lock",
         ),
         migrations.AddField(
-            model_name='ride',
-            name='cost',
+            model_name="ride",
+            name="cost",
             field=models.IntegerField(default=0),
         ),
         migrations.CreateModel(
-            name='Lock',
+            name="Lock",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cycle', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='booking.cycle')),
-                ('hub', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='booking.hub')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "cycle",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE, to="booking.cycle"
+                    ),
+                ),
+                (
+                    "hub",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE, to="booking.hub"
+                    ),
+                ),
             ],
         ),
     ]
