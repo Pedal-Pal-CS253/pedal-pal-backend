@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import authentication
 from django.http.response import JsonResponse
 from booking.models import Cycle, Ride
-from booking.serializers import BookRideSerializer, RideSerializer
+from booking.serializers import BookRideSerializer, RideSerializer, EndRideSerializer
 import datetime
 
 
@@ -79,4 +79,21 @@ class BookLaterAPI(generics.GenericAPIView):
         )
 
         serializer = RideSerializer(ride)
+        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class EndRideAPI(generics.GenericAPIView):
+    serializer_class = EndRideSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (authentication.TokenAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        cycle = serializer.validated_data.get("cycle")
+        user = request.user
+        
+        ride = Ride.objects.filter(user=user)
+        ride.end_ride( datetime.now, serializer_class.lock)
+        
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
