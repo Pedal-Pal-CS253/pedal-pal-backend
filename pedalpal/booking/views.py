@@ -12,6 +12,14 @@ from booking.serializers import (
 )
 import datetime
 
+from django.http import JsonResponse
+from django.db.models import Count,Q
+
+
+
+from booking.models import Hub,Cycle
+from booking.serializers import CycleSerializer
+from .serializers import HubSerializer
 
 class BookNowAPI(generics.GenericAPIView):
     serializer_class = BookRideSerializer
@@ -101,3 +109,25 @@ class EndRideAPI(generics.GenericAPIView):
         ride.end_ride(datetime.now, serializer_class.lock)
 
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+
+
+
+class ViewsAPI(generics.GenericAPIView):
+
+
+    
+
+
+    def get(self, request, *args, **kwargs):
+        queryset = Hub.objects.all()
+        serializer_class = HubSerializer
+        available_cycles = Hub.objects.annotate(num_available=Count('cycle', filter=Q(cycle__booked=False) & Q(cycle__active=False))).values_list('id', flat=True)
+        hub_data = serializer_class(queryset, many=True).data
+        for hub in hub_data:
+            hub['available'] = available_cycles[hub_data.index(hub)]
+        return JsonResponse(hub_data,safe=False)   
+
+
+        
