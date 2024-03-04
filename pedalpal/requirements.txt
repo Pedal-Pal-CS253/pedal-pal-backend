@@ -3,14 +3,12 @@ cfgv==3.4.0
 distlib==0.3.8
 Django==4.2.10
 django-adminlte-3==0.1.6
-django-phonenumber-field==7.3.0
 django-rest-passwordreset==1.4.0
 django_rest_resetpassword==0.1.2
 djangorestframework==3.14.0
 filelock==3.13.1
 identify==2.5.34
 nodeenv==1.8.0
-phonenumberslite==8.13.30
 pillow==10.2.0
 platformdirs==4.2.0
 pre-commit==3.6.1

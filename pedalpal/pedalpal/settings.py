@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "payment",
     "adminlte3",
     "adminlte3_theme",
-    "phonenumber_field",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -58,7 +57,6 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
 }

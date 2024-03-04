@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
 
 
@@ -68,3 +69,18 @@ def change_password(request):
                 {"error": "Incorrect old password."}, status=status.HTTP_400_BAD_REQUEST
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetAuthToken(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = LoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key})
