@@ -5,6 +5,6 @@ from .views import ViewsAPI
 
 urlpatterns = [
     path("book/", BookNowAPI.as_view(), name="book"),
-    path("view/", ViewsAPI.as_view()),
+    path("view_hubs/", ViewsAPI.as_view()),
     path("end/", EndRideAPI.as_view(), name="end"),
 ]
