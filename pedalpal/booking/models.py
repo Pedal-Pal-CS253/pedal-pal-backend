@@ -2,6 +2,8 @@ from django.db import models
 from authentication.models import Profile
 from payment.models import Payment
 
+COST_PER_UNIT_TIME = 1
+
 
 class Hub(models.Model):
     hub_name = models.CharField(max_length=50)
@@ -15,7 +17,6 @@ class Cycle(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
     booked = models.BooleanField(default=False)
     active = models.BooleanField(default=False)
-    lock = models.CharField(max_length=64)  # TODO: change later
 
     def is_booked(self):
         return self.booked
@@ -23,11 +24,22 @@ class Cycle(models.Model):
     def is_active(self):
         return self.active
 
-    def bookNow(self, user):
+    def book_now(self, user):
         self.booked = True
         self.active = True
         self.user = user
         self.save()
+
+    def book_later(self, user):
+        self.booked = True
+        self.active = False
+        self.user = user
+        self.save()
+
+
+class Lock(models.Model):
+    cycle = models.OneToOneField(Cycle, on_delete=models.CASCADE)
+    hub = models.OneToOneField(Hub, on_delete=models.CASCADE)
 
 
 class Ride(models.Model):
@@ -35,6 +47,7 @@ class Ride(models.Model):
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(blank=True, null=True)
+    cost = models.IntegerField(default=0)
     start_hub = models.ForeignKey(
         Hub, related_name="%(class)s_start", on_delete=models.CASCADE
     )
@@ -51,16 +64,25 @@ class Ride(models.Model):
         Payment, on_delete=models.CASCADE, null=True, blank=True
     )
 
+    def end_ride(self, end_time, lock):
+        self.cycle.hub = lock.hub
+        self.cycle.user = None
+        self.cycle.active = False
+        self.end_time = end_time
+        self.user.set_ride_active(False)
+        self.cost = (self.end_time - self.start_time) * COST_PER_UNIT_TIME
+        lock.cycle = self.cycle
+        lock.save()
+        self.cycle.save()
+        self.user.save()
+
 
 class Booking(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(blank=True, null=True)
-    status = models.CharField(max_length=20)
+    cancelled = models.BooleanField(default=False)
     payment = models.ForeignKey(
         Payment, on_delete=models.CASCADE, blank=True, null=True
     )
-
-    def __str__(self):
-        return str(self.booking_id)
