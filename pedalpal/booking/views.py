@@ -1,3 +1,5 @@
+import serial
+import sys
 from rest_framework import status
 from rest_framework import generics, permissions
 from rest_framework.response import Response
@@ -41,6 +43,26 @@ class BookNowAPI(generics.GenericAPIView):
         if cycle.is_booked():
             return JsonResponse(
                 {"message": "Cycle already booked"}, status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        arduino1_port = str(cycle.lock.arduino_port)
+        baud_rate = 115200
+        arduino1 = serial.Serial(arduino1_port, baud_rate, timeout=0)
+        val = 1
+        arduino1.write(str(val).encode()+b'\n')
+
+        received_string = ""
+        flag = 0
+        while received_string == "" and flag < 1000000:
+            received_string = arduino1.readline().decode().strip()
+            flag += 1
+
+        val = 0
+        arduino1.write(str(val).encode()+b'\n')
+        
+        if received_string != "Unlocked":
+            return JsonResponse(
+                {"message": "Cycle not unlocked!"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         cycle.bookNow(user)
