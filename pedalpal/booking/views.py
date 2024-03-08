@@ -123,6 +123,13 @@ class EndRideAPI(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
+
+        if user.ride_active is False:
+            return JsonResponse(
+                {"message": "User does not have an active ride"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         ride = Ride.objects.get(user=user, end_time=None)
         id = request.data["id"]
         lock = Lock.objects.get(id=id)
