@@ -5,7 +5,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import authentication
 from django.http.response import JsonResponse
-from booking.models import Cycle, Ride, Booking
+from booking.models import Cycle, Ride, Booking, Lock
 from booking.serializers import (
     BookRideSerializer,
     RideSerializer,
@@ -122,14 +122,22 @@ class EndRideAPI(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        cycle = serializer.validated_data.get("cycle")
+        print(request.data)
+        # serializer = self.get_serializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+        # cycle = serializer.validated_data.get("cycle")
         user = request.user
+        # print(cycle)
+        
+        ride = Ride.objects.get(user=user,end_time=None)
+        print(ride)
+        id =request.data["id"]
+        print("---id=",id)
+        lock = Lock.objects.get(id=id)
+        print(lock)
+        ride.end_ride(datetime.datetime.now(),lock)
 
-        ride = Ride.objects.filter(user=user)
-        ride.end_ride(datetime.now, serializer_class.lock)
-
+        serializer = RideSerializer(ride)
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
     
 

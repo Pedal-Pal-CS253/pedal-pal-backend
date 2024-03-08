@@ -1,6 +1,9 @@
 from django.contrib import admin
-from .models import Hub, Cycle, Ride
+from .models import Hub, Cycle, Ride, Lock
 from import_export.admin import ImportExportModelAdmin
+
+
+admin.site.register(Lock)
 
 
 @admin.register(Hub)
