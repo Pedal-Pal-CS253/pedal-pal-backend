@@ -6,12 +6,13 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    path("", include("maintenance.urls")),
+    path("maintenance/", include("maintenance.urls")),
     path("booking/", include("booking.urls")),
     path("admin/", admin.site.urls, name="admin"),
     path("logout/", views.admin_logout, name="logout"),
     path("auth/", include("authentication.urls")),
-    path("", include("analytics.urls")),
+    path("analytics/", include("analytics.urls")),
+    path("payment/", include("payment.urls")),
     path(
         "auth/password_reset/",
         include("django_rest_passwordreset.urls", namespace="password_reset"),
