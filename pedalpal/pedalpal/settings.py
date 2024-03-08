@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "payment",
     "adminlte3",
     "adminlte3_theme",
+    "import_export",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

@@ -12,7 +12,8 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 
 from django.dispatch import receiver
-from django.urls import reverse
+
+# from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -26,11 +27,8 @@ def password_reset_token_created(
         "current_user": reset_password_token.user,
         "first_name": reset_password_token.user.first_name,
         "email": reset_password_token.user.email,
-        "reset_password_url": "{}?token={}".format(
-            instance.request.build_absolute_uri(
-                reverse("password_reset:reset-password-confirm")
-            ),
-            reset_password_token.key,
+        "reset_password_url": "https://pedal-pal-backend.vercel.app/auth/password_reset/confirm/?token={}".format(
+            reset_password_token.key
         ),
     }
 

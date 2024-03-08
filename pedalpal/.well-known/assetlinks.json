@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pedalpal.app",
+      "sha256_cert_fingerprints": [
+        "70:33:AB:7B:14:A6:C9:65:38:9D:F7:77:99:17:E8:85:AB:0B:18:63:88:27:4C:41:C0:21:74:1E:FB:AC:DD:40"
+      ]
+    }
+  }
+]

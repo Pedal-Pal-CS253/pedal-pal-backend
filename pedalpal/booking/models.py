@@ -38,6 +38,7 @@ class Cycle(models.Model):
 
 
 class Lock(models.Model):
+    arduino_port = models.CharField(max_length=50)
     cycle = models.OneToOneField(Cycle, on_delete=models.CASCADE)
     hub = models.OneToOneField(Hub, on_delete=models.CASCADE)
 
