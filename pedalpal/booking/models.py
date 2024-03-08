@@ -69,12 +69,12 @@ class Ride(models.Model):
         self.cycle.hub = lock.hub
         self.cycle.user = None
         self.cycle.active = False
+        self.cycle.booked = False
         self.end_time = end_time
         self.user.set_ride_active(False)
 
-        #TODO: update later
-        self.cost = (10) * COST_PER_UNIT_TIME
-        self.time = 10
+        self.time = (self.end_time - self.start_time).total_seconds() / 60
+        self.cost = self.time * COST_PER_UNIT_TIME
 
         lock.cycle = self.cycle
         self.end_hub = lock.hub
