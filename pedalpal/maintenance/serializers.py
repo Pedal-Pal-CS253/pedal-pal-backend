@@ -5,8 +5,8 @@ from maintenance.models import Feedback
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
-        user = Feedback.user
         fields = [
+            "user",
             "air_issues",
             "sound_issues",
             "brake_issues",
