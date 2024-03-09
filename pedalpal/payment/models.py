@@ -1,11 +1,11 @@
 from django.db import models
-import uuid
+from authentication.models import Profile
 
 
 class Payment(models.Model):
-    payment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     amount = models.FloatField()
     status = models.CharField(max_length=20)
 
     def __str__(self):
-        return str(self.payment_id)
+        return str(self.user + " " + self.amount)

@@ -29,11 +29,10 @@ class BookLaterSerializer(serializers.ModelSerializer):
 class EndRideSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lock
-        fields = ["hub"]
+        fields = ["id"]
 
-        
+
 class HubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hub
-        fields = '__all__'
-    
+        fields = "__all__"

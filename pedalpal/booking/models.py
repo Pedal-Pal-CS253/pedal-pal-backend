@@ -38,8 +38,9 @@ class Cycle(models.Model):
 
 
 class Lock(models.Model):
+    arduino_port = models.CharField(max_length=50)
     cycle = models.OneToOneField(Cycle, on_delete=models.CASCADE)
-    hub = models.OneToOneField(Hub, on_delete=models.CASCADE)
+    hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 
 
 class Ride(models.Model):
@@ -68,13 +69,19 @@ class Ride(models.Model):
         self.cycle.hub = lock.hub
         self.cycle.user = None
         self.cycle.active = False
+        self.cycle.booked = False
         self.end_time = end_time
         self.user.set_ride_active(False)
-        self.cost = (self.end_time - self.start_time) * COST_PER_UNIT_TIME
+
+        self.time = (self.end_time - self.start_time).total_seconds() / 60
+        self.cost = self.time * COST_PER_UNIT_TIME
+
         lock.cycle = self.cycle
+        self.end_hub = lock.hub
         lock.save()
         self.cycle.save()
         self.user.save()
+        self.save()
 
 
 class Booking(models.Model):

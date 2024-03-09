@@ -1,7 +1,6 @@
 # urls.py
 from django.urls import path
 from .views import RegisterAPI, LoginAPI, change_password, GetAuthToken
-from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path("register/", RegisterAPI.as_view(), name="User_register"),
