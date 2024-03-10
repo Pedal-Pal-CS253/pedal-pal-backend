@@ -39,7 +39,7 @@ class Cycle(models.Model):
 
 class Lock(models.Model):
     arduino_port = models.CharField(max_length=50)
-    cycle = models.OneToOneField(Cycle, on_delete=models.CASCADE)
+    cycle = models.OneToOneField(Cycle, on_delete=models.CASCADE, null=True, blank=True)
     hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 
 
@@ -61,7 +61,7 @@ class Ride(models.Model):
     )
     time = models.IntegerField(blank=True, null=True)  # in minutes
 
-    payment = models.ForeignKey(
+    payment = models.OneToOneField(
         Payment, on_delete=models.CASCADE, null=True, blank=True
     )
 
@@ -87,9 +87,20 @@ class Ride(models.Model):
 class Booking(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
+    hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
+    book_time = models.DateTimeField()
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(blank=True, null=True)
     cancelled = models.BooleanField(default=False)
+    cost = models.IntegerField(default=0)
     payment = models.ForeignKey(
         Payment, on_delete=models.CASCADE, blank=True, null=True
     )
+
+    def end_booking(self, end_time):
+        self.end_time = end_time
+        self.cancelled = False
+        self.cost = (
+            (self.end_time - self.start_time).total_seconds() / 60 * COST_PER_UNIT_TIME
+        )
+        self.save()

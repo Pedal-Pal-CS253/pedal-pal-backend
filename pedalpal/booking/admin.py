@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Hub, Cycle, Ride, Lock
+from .models import Hub, Cycle, Ride, Lock, Booking
 from import_export.admin import ImportExportModelAdmin
 
 
@@ -8,7 +8,6 @@ admin.site.register(Lock)
 
 @admin.register(Hub)
 class Hub(ImportExportModelAdmin):
-    pass
     list_display = ("hub_name", "max_capacity")
 
 
@@ -20,3 +19,17 @@ class Cycle(ImportExportModelAdmin):
 @admin.register(Ride)
 class Ride(ImportExportModelAdmin):
     list_display = ("cycle", "user", "start_time", "end_time", "cost")
+
+
+@admin.register(Booking)
+class Booking(ImportExportModelAdmin):
+    list_display = (
+        "user",
+        "hub",
+        "cycle",
+        "book_time",
+        "start_time",
+        "end_time",
+        "cancelled",
+        "payment_id",
+    )

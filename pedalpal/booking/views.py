@@ -7,6 +7,7 @@ from rest_framework import authentication
 from django.http.response import JsonResponse
 
 from booking.models import Cycle, Ride, Booking, Lock
+from payment.models import Payment
 from booking.serializers import (
     BookRideSerializer,
     RideSerializer,
@@ -32,8 +33,6 @@ class BookNowAPI(generics.GenericAPIView):
         cycle = serializer.validated_data.get("cycle")
         user = self.request.user
 
-        print("user = ", user)
-
         if user.is_ride_active():
             return JsonResponse(
                 {"message": "User already has an active ride"},
@@ -41,9 +40,16 @@ class BookNowAPI(generics.GenericAPIView):
             )
 
         if cycle.is_booked():
-            return JsonResponse(
-                {"message": "Cycle already booked"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            if cycle.user == user:
+                cycle.book_now(user)
+                user.set_ride_active(True)
+                booking = Booking.objects.get(user=user, cycle=cycle, end_time=None)
+                booking.end_booking(timezone.now())
+            else:
+                return JsonResponse(
+                    {"message": "Cycle already booked"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         # arduino1_port = str(cycle.lock.arduino_port)
         # baud_rate = 115200
@@ -92,28 +98,73 @@ class BookLaterAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cycle = serializer.validated_data.get("cycle")
+
+        hub = serializer.validated_data.get("hub")
+        cycle = Cycle.objects.filter(hub=hub, booked=False, active=False).first()
+        start_time = serializer.validated_data.get("start_time")
         user = self.request.user
+        cost = int(
+            (start_time - timezone.now()).total_seconds() / 60 * 1 + 1
+        )  # 1 rupee per minute
+
+        if not user.is_subscribed:
+            return JsonResponse(
+                {"message": "You need to be subscribed to avail this service!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if user.is_ride_active():
+            return JsonResponse(
+                {"message": "User already has an active ride"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if cycle is None:
+            return JsonResponse(
+                {"message": "Hub does not have any available cycles!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if cycle.is_booked():
             return JsonResponse(
                 {"message": "Cycle already booked"}, status=status.HTTP_400_BAD_REQUEST
             )
 
+        if start_time < timezone.now():
+            return JsonResponse(
+                {"message": "Start time cannot be in the past"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if user.balance < cost:
+            return JsonResponse(
+                {"message": "Insufficient balance"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
         cycle.book_later(user)
 
-        start_time = serializer.validated_data.get("start_time")
+        user.balance -= cost
+        user.save()
+
+        payment = Payment.objects.create(user=user, amount=-cost, status="DEBIT")
+
         booking = Booking.objects.create(
             user=user,
+            hub=hub,
             cycle=cycle,
+            book_time=timezone.now(),
             start_time=start_time,
             end_time=None,
             cancelled=False,
-            payment_id=None,
+            cost=cost,
+            payment_id=payment.id,
         )
 
         serializer = BookLaterSerializer(booking)
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# TODO: Cancel booking API
 
 
 class EndRideAPI(generics.GenericAPIView):

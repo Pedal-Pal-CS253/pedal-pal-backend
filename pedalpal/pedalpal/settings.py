@@ -104,6 +104,10 @@ DATABASES = {
         "HOST": os.getenv("POSTGRES_HOST"),
         "PORT": os.getenv("POSTGRES_DB_PORT"),
     }
+    # "default": {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": BASE_DIR / "db.sqlite3",
+    # }
 }
 
 
