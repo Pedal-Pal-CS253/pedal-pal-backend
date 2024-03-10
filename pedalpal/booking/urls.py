@@ -1,4 +1,4 @@
-from booking.views import BookNowAPI, EndRideAPI, BookLaterAPI, ViewsAPI
+from .views import BookNowAPI, EndRideAPI, BookLaterAPI, ViewsAPI
 from django.urls import path
 
 
