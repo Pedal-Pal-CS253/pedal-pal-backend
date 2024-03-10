@@ -17,13 +17,13 @@ class RideSerializer(serializers.ModelSerializer):
 class BookRideSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ride
-        fields = ["cycle", "start_time"]
+        fields = ["cycle"]
 
 
 class BookLaterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ["cycle", "start_time"]
+        fields = ["hub", "start_time"]
 
 
 class EndRideSerializer(serializers.ModelSerializer):
