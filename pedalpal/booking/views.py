@@ -190,14 +190,17 @@ class EndRideAPI(generics.GenericAPIView):
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ViewsAPI(generics.GenericAPIView):
+class GetHubsDataAPI(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
     def get(self, request, *args, **kwargs):
         queryset = Hub.objects.all()
         serializer_class = HubSerializer
 
         available_cycles = Hub.objects.annotate(
             num_available=Count(
-                "cycle", filter=Q(cycle__booked=False) & Q(cycle__active=True)
+                "cycle", filter=Q(cycle__booked=False) & Q(cycle__active=False)
             )
         )
 
