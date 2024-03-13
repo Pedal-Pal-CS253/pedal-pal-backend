@@ -184,7 +184,20 @@ class EndRideAPI(generics.GenericAPIView):
         ride = Ride.objects.get(user=user, end_time=None)
         id = request.data["id"]
         lock = Lock.objects.get(id=id)
-        ride.end_ride(timezone.now(), lock)
+        cost = int(
+            (ride.start_time - timezone.now()).total_seconds() / 60 * 1 + 1
+        )  # 1 rupee per minute
+
+        already_paid = request.data.get("payment_id", -1)
+
+        if already_paid == -1:
+            user.balance -= cost
+            user.save()
+            payment = Payment.objects.create(user=user, amount=-cost, status="DEBIT")
+        else:
+            payment = Payment.objects.get(id=already_paid)
+
+        ride.end_ride(timezone.now(), lock, payment)
 
         serializer = RideSerializer(ride)
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
