@@ -31,7 +31,7 @@ class BookNowAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         cycle = serializer.validated_data.get("cycle")
-        user = self.request.user
+        user = request.user
 
         if user.is_ride_active():
             return JsonResponse(
@@ -102,7 +102,7 @@ class BookLaterAPI(generics.GenericAPIView):
         hub = serializer.validated_data.get("hub")
         cycle = Cycle.objects.filter(hub=hub, booked=False, active=False).first()
         start_time = serializer.validated_data.get("start_time")
-        user = self.request.user
+        user = request.user
         cost = int(
             (start_time - timezone.now()).total_seconds() / 60 * 1 + 1
         )  # 1 rupee per minute
@@ -157,7 +157,7 @@ class BookLaterAPI(generics.GenericAPIView):
             end_time=None,
             cancelled=False,
             cost=cost,
-            payment_id=payment.id,
+            payment=payment,
         )
 
         serializer = BookLaterSerializer(booking)

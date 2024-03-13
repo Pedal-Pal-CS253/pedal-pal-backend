@@ -22,7 +22,7 @@ class FeedbackAdd(generics.CreateAPIView):
         brake_issues = request.data.get("brake_issues")
         chain_issues = request.data.get("chain_issues")
         detailed_issues = request.data.get("detailed_issues")
-        user = self.request.user
+        user = request.user
         feedback = Feedback.objects.create(
             user=user,
             air_issues=air_issues,

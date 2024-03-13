@@ -8,7 +8,7 @@ class GetBalanceAPI(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
         return JsonResponse({"balance": user.balance})
 
 
@@ -16,7 +16,7 @@ class UpdateBalanceAPI(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
         user.balance += int(request.data.get("amount"))
         user.save()
 
@@ -38,7 +38,7 @@ class GetTransactionsAPI(generics.GenericAPIView):
     serializer_class = PaymentSerializer
 
     def get(self, request, *args, **kwargs):
-        user = self.request.user
+        user = request.user
         transactions = Payment.objects.filter(user=user)
         serializer = self.serializer_class(transactions, many=True)
 
