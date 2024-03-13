@@ -4,6 +4,16 @@ from .models import Payment
 from .serializers import PaymentSerializer
 
 
+class AddPaymentAPI(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        payment = Payment(user=user, amount=request.data.get("amount"))
+        payment.save()
+        return JsonResponse({"message": "Payment added successfully"})
+
+
 class GetBalanceAPI(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
