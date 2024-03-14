@@ -99,3 +99,23 @@ class GetUserDetailsAPI(generics.GenericAPIView):
                 ).data,
             }
         )
+   
+
+class SubscribeAPI(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        value = request.data["value"]
+        if user.check_subscription() == value:
+            msg = "User already has a subscription"
+            if not value:
+                msg = "User does not have a subscription"
+
+            return Response(
+                {"message": msg},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.subscribe(value)
+        return Response(status=status.HTTP_200_OK)

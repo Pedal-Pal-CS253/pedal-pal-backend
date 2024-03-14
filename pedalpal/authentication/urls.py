@@ -6,6 +6,7 @@ from .views import (
     change_password,
     GetAuthToken,
     GetUserDetailsAPI,
+    SubscribeAPI
 )
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     path("change_password/", change_password, name="change_password"),
     path("get_auth_token/", GetAuthToken.as_view()),
     path("get_user_details/", GetUserDetailsAPI.as_view()),
+    path("subscribe/", SubscribeAPI.as_view(), name="subscribe"),
 ]

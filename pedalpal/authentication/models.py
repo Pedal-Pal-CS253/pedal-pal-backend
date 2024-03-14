@@ -65,5 +65,12 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         self.ride_active = value
         self.save()
 
+    def subscribe(self, val):
+        self.is_subscribed = val
+        self.save()
+
+    def check_subscription(self):
+        return self.is_subscribed
+
     def __str__(self):
         return self.email
