@@ -2,7 +2,7 @@ from rest_framework import generics, permissions
 from rest_framework import authentication
 from django.http.response import JsonResponse
 from booking.models import Ride, Booking
-from booking.serializers import RideSerializer
+from booking.serializers import RideSerializer, BookingSerializer
 from authentication.serializers import BlankUserSerializer, UpdateProfileSerializer
 
 
@@ -25,7 +25,7 @@ class BookingViewAPI(generics.GenericAPIView):
     def get(self, request):
         user = request.user
         bookings = Booking.objects.filter(user=user)
-        serializer = RideSerializer(bookings, many=True)
+        serializer = BookingSerializer(bookings, many=True)
         return JsonResponse(serializer.data, safe=False)
 
 
