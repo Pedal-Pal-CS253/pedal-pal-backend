@@ -9,7 +9,7 @@ class AddPaymentAPI(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        payment = Payment(user=user, amount=request.data.get("amount"))
+        payment = Payment(user=user, amount=-request.data.get("amount"), status="DEBIT")
         payment.save()
         return JsonResponse({"id": payment.id})
 
