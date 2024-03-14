@@ -86,6 +86,21 @@ class GetAuthToken(generics.GenericAPIView):
         return Response({"token": token.key})
 
 
+class GetUserDetailsAPI(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ProfileSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return Response(
+            {
+                "user": ProfileSerializer(
+                    user, context=self.get_serializer_context()
+                ).data,
+            }
+        )
+   
+
 class SubscribeAPI(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 

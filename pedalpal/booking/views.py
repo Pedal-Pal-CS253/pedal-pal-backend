@@ -185,7 +185,7 @@ class EndRideAPI(generics.GenericAPIView):
         id = request.data["id"]
         lock = Lock.objects.get(id=id)
         cost = int(
-            (ride.start_time - timezone.now()).total_seconds() / 60 * 1 + 1
+            (timezone.now() - ride.start_time).total_seconds() / 60 * 1 + 1
         )  # 1 rupee per minute
 
         already_paid = request.data.get("payment_id", -1)
