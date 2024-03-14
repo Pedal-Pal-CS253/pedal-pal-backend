@@ -11,7 +11,7 @@ class AddPaymentAPI(generics.GenericAPIView):
         user = request.user
         payment = Payment(user=user, amount=request.data.get("amount"))
         payment.save()
-        return JsonResponse({"message": "Payment added successfully"})
+        return JsonResponse({"id": payment.id})
 
 
 class GetBalanceAPI(generics.GenericAPIView):
