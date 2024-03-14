@@ -1,8 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework import authentication
 from django.http.response import JsonResponse
-from booking.models import Ride
-from authentication.models import Profile
+from booking.models import Ride, Booking
 from booking.serializers import RideSerializer
 from authentication.serializers import BlankUserSerializer, UpdateProfileSerializer
 
@@ -15,6 +14,18 @@ class HistoryViewAPI(generics.GenericAPIView):
     def post(self, request):
         rides = Ride.objects.filter(user=request.user)
         serializer = RideSerializer(rides, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+
+class BookingViewAPI(generics.GenericAPIView):
+    serializer_class = BlankUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication]
+
+    def post(self, request):
+        user = request.user
+        bookings = Booking.objects.filter(user=user)
+        serializer = RideSerializer(bookings, many=True)
         return JsonResponse(serializer.data, safe=False)
 
 
