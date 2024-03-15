@@ -1,3 +1,4 @@
+from authentication.models import Profile
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from .serializers import (
@@ -5,6 +6,7 @@ from .serializers import (
     RegisterSerializer,
     LoginSerializer,
     ChangePasswordSerializer,
+    VerifyAccountSerializer
 )
 from django.contrib.auth import login
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +15,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
+
+from .email import send_otp_via_email
 
 
 class RegisterAPI(generics.GenericAPIView):
@@ -23,6 +27,7 @@ class RegisterAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        send_otp_via_email(user.email)
         return Response(
             {
                 "user": ProfileSerializer(
@@ -31,7 +36,29 @@ class RegisterAPI(generics.GenericAPIView):
             }
         )
 
+class VerifyOTP(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = VerifyAccountSerializer
 
+    def post(self, request, *args, **kwargs):
+        serializer = VerifyAccountSerializer(data=request.data)
+        email = request.data.get("email")
+        otp = request.data.get("otp")
+        user = Profile.objects.get(email=email)
+        if user.otp == otp:
+            user.is_active = True
+            user.save()
+            return Response(
+                {
+                    "user": ProfileSerializer(
+                        user, context=self.get_serializer_context()
+                    ).data,
+                }
+            )
+        return Response(
+            {"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    
 class LoginAPI(generics.GenericAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
@@ -119,3 +146,5 @@ class SubscribeAPI(generics.GenericAPIView):
 
         user.subscribe(value)
         return Response(status=status.HTTP_200_OK)
+    
+
