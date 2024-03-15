@@ -30,7 +30,7 @@ class BookNowAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        lock_id = serializer.validated_data["id"]
+        lock_id = request.data["id"]
         lock = Lock.objects.get(id=lock_id)
         cycle = lock.cycle
 
