@@ -30,7 +30,10 @@ class BookNowAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cycle = serializer.validated_data.get("cycle")
+        lock_id = serializer.validated_data["id"]
+        lock = Lock.objects.get(id=lock_id)
+        cycle = lock.cycle
+
         user = request.user
 
         if user.is_ride_active():
@@ -43,6 +46,8 @@ class BookNowAPI(generics.GenericAPIView):
             if cycle.user == user:
                 cycle.book_now(user)
                 user.set_ride_active(True)
+                lock.cycle = None
+                lock.save()
                 booking = Booking.objects.get(user=user, cycle=cycle, end_time=None)
                 booking.end_booking(timezone.now())
             else:
@@ -73,6 +78,8 @@ class BookNowAPI(generics.GenericAPIView):
 
         cycle.book_now(user)
         user.set_ride_active(True)
+        lock.cycle = None
+        lock.save()
 
         start_time = timezone.now()
         ride = Ride.objects.create(
@@ -183,7 +190,21 @@ class EndRideAPI(generics.GenericAPIView):
 
         ride = Ride.objects.get(user=user, end_time=None)
         id = request.data["id"]
-        lock = Lock.objects.get(id=id)
+
+        try:
+            lock = Lock.objects.get(id=id)
+        except Lock.DoesNotExist:
+            return JsonResponse(
+                {"message": "Lock does not exist!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if lock.cycle is not None:
+            return JsonResponse(
+                {"message": "Lock is not empty!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         cost = int(
             (timezone.now() - ride.start_time).total_seconds() / 60 * 1 + 1
         )  # 1 rupee per minute
