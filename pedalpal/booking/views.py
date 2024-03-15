@@ -36,6 +36,12 @@ class BookNowAPI(generics.GenericAPIView):
 
         user = request.user
 
+        if cycle is None:
+            return JsonResponse(
+                {"message": "Lock has no cycle attached to it"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if user.is_ride_active():
             return JsonResponse(
                 {"message": "User already has an active ride"},
