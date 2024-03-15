@@ -22,8 +22,8 @@ class BookingSerializer(serializers.ModelSerializer):
 
 class BookRideSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Ride
-        fields = ["cycle"]
+        model = Lock
+        fields = ["id"]
 
 
 class BookLaterSerializer(serializers.ModelSerializer):
