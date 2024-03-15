@@ -43,10 +43,12 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=50, null=True)
     phone = models.CharField(max_length=15)
     is_subscribed = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     ride_active = models.BooleanField(default=False)
     balance = models.IntegerField(default=0)
+    otp = models.CharField(max_length=6, null=True, blank=True)
+
 
     objects = ProfileManager()
 
