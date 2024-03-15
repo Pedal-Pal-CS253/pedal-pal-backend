@@ -22,7 +22,7 @@ class BookingViewAPI(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [authentication.TokenAuthentication]
 
-    def post(self, request):
+    def get(self, request):
         user = request.user
         bookings = Booking.objects.filter(user=user)
         serializer = RideSerializer(bookings, many=True)
