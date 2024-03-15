@@ -6,4 +6,4 @@ from import_export.admin import ImportExportModelAdmin
 @admin.register(Payment)
 class Payment(ImportExportModelAdmin):
   pass
-  list_display = ("user", "amount", "status")
+  list_display = ("user", "amount", "status", "time")
