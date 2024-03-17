@@ -49,7 +49,6 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     balance = models.IntegerField(default=0)
     otp = models.CharField(max_length=6, null=True, blank=True)
 
-
     objects = ProfileManager()
 
     USERNAME_FIELD = "email"

@@ -6,8 +6,10 @@ from .serializers import (
     RegisterSerializer,
     LoginSerializer,
     ChangePasswordSerializer,
-    VerifyAccountSerializer
 )
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.decorators import renderer_classes, authentication_classes
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
@@ -36,29 +38,31 @@ class RegisterAPI(generics.GenericAPIView):
             }
         )
 
-class VerifyOTP(generics.GenericAPIView):
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = VerifyAccountSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = VerifyAccountSerializer(data=request.data)
-        email = request.data.get("email")
-        otp = request.data.get("otp")
-        user = Profile.objects.get(email=email)
-        if user.otp == otp:
-            user.is_active = True
-            user.save()
-            return Response(
-                {
-                    "user": ProfileSerializer(
-                        user, context=self.get_serializer_context()
-                    ).data,
-                }
-            )
+@api_view(("POST", "GET"))
+@renderer_classes((JSONRenderer,))
+@authentication_classes([])
+@permission_classes([])
+@csrf_exempt
+def activate_account(request, id, otp):
+    try:
+        user = Profile.objects.get(id=id)
+    except Profile.DoesNotExist:
         return Response(
-            {"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "User does not exist."}, status=status.HTTP_400_BAD_REQUEST
         )
-    
+
+    if user.otp == str(otp):
+        user.is_active = True
+        user.save()
+        return Response(
+            {"message": "Account activated successfully."},
+            status=status.HTTP_200_OK,
+        )
+
+    return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class LoginAPI(generics.GenericAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
@@ -126,7 +130,7 @@ class GetUserDetailsAPI(generics.GenericAPIView):
                 ).data,
             }
         )
-   
+
 
 class SubscribeAPI(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -146,5 +150,3 @@ class SubscribeAPI(generics.GenericAPIView):
 
         user.subscribe(value)
         return Response(status=status.HTTP_200_OK)
-    
-

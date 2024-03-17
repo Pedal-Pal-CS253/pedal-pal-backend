@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0002_profile_balance'),
+        ("authentication", "0002_profile_balance"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='is_verified',
+            model_name="profile",
+            name="is_verified",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='otp',
+            model_name="profile",
+            name="otp",
             field=models.CharField(blank=True, max_length=6, null=True),
         ),
     ]
