@@ -7,7 +7,7 @@ from .views import (
     GetAuthToken,
     GetUserDetailsAPI,
     SubscribeAPI,
-    VerifyOTP
+    activate_account,
 )
 
 urlpatterns = [
@@ -17,5 +17,5 @@ urlpatterns = [
     path("get_auth_token/", GetAuthToken.as_view()),
     path("get_user_details/", GetUserDetailsAPI.as_view()),
     path("subscribe/", SubscribeAPI.as_view(), name="subscribe"),
-    path ("verify/",VerifyOTP.as_view()),
+    path("verify/<int:id>/<int:otp>/", activate_account, name="activate_account"),
 ]
