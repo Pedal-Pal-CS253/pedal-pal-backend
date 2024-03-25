@@ -20,6 +20,7 @@ from django.utils import timezone
 from booking.models import Hub, Cycle
 from booking.serializers import CycleSerializer
 from .serializers import HubSerializer
+from .utils import end_expired_bookings
 
 
 class BookNowAPI(generics.GenericAPIView):
@@ -28,6 +29,7 @@ class BookNowAPI(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
 
     def post(self, request, *args, **kwargs):
+        end_expired_bookings()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         lock_id = request.data["id"]
@@ -109,6 +111,7 @@ class BookLaterAPI(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
 
     def post(self, request, *args, **kwargs):
+        end_expired_bookings()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -235,6 +238,7 @@ class GetHubsDataAPI(generics.GenericAPIView):
     authentication_classes = ()
 
     def get(self, request, *args, **kwargs):
+        end_expired_bookings()
         queryset = Hub.objects.all()
         serializer_class = HubSerializer
 

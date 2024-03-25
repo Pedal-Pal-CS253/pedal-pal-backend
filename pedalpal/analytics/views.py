@@ -3,6 +3,7 @@ from rest_framework import authentication
 from django.http.response import JsonResponse
 from booking.models import Ride, Booking
 from booking.serializers import RideSerializer, BookingSerializer
+from booking.utils import end_expired_bookings
 from authentication.serializers import BlankUserSerializer, UpdateProfileSerializer
 
 
@@ -23,6 +24,7 @@ class BookingViewAPI(generics.GenericAPIView):
     authentication_classes = [authentication.TokenAuthentication]
 
     def get(self, request):
+        end_expired_bookings()
         user = request.user
         bookings = Booking.objects.filter(user=user)
         serializer = BookingSerializer(bookings, many=True)
