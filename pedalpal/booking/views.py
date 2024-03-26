@@ -20,7 +20,7 @@ from django.utils import timezone
 from booking.models import Hub, Cycle
 from booking.serializers import CycleSerializer
 from .serializers import HubSerializer
-from .utils import end_expired_bookings
+from .utils import end_expired_bookings, AESCipher
 
 
 class BookNowAPI(generics.GenericAPIView):
@@ -33,7 +33,18 @@ class BookNowAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         lock_id = request.data["id"]
-        lock = Lock.objects.get(id=lock_id)
+
+        cipher = AESCipher(32)
+
+        try:
+            lock_id = int(cipher.decrypt(lock_id))
+            lock = Lock.objects.get(id=lock_id)
+        except Exception:
+            return JsonResponse(
+                {"message": "Invalid lock!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         cycle = lock.cycle
 
         user = request.user
@@ -200,11 +211,14 @@ class EndRideAPI(generics.GenericAPIView):
         ride = Ride.objects.get(user=user, end_time=None)
         id = request.data["id"]
 
+        cipher = AESCipher(32)
+
         try:
+            id = int(cipher.decrypt(id))
             lock = Lock.objects.get(id=id)
-        except Lock.DoesNotExist:
+        except Exception:
             return JsonResponse(
-                {"message": "Lock does not exist!"},
+                {"message": "Invalid lock!"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
