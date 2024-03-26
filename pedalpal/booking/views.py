@@ -20,7 +20,8 @@ from django.utils import timezone
 from booking.models import Hub, Cycle
 from booking.serializers import CycleSerializer
 from .serializers import HubSerializer
-from .utils import end_expired_bookings, AESCipher
+from .utils import end_expired_bookings
+import os
 
 
 class BookNowAPI(generics.GenericAPIView):
@@ -34,10 +35,12 @@ class BookNowAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         lock_id = request.data["id"]
 
-        cipher = AESCipher(32)
+        key = int(os.getenv("SECRET_KEY"))
 
         try:
-            lock_id = int(cipher.decrypt(lock_id))
+            print(lock_id)
+            lock_id = int(lock_id) ^ key
+            print(lock_id)
             lock = Lock.objects.get(id=lock_id)
         except Exception:
             return JsonResponse(
@@ -211,10 +214,10 @@ class EndRideAPI(generics.GenericAPIView):
         ride = Ride.objects.get(user=user, end_time=None)
         id = request.data["id"]
 
-        cipher = AESCipher(32)
+        key = int(os.getenv("SECRET_KEY"))
 
         try:
-            id = int(cipher.decrypt(id))
+            id = int(id) ^ key
             lock = Lock.objects.get(id=id)
         except Exception:
             return JsonResponse(
