@@ -6,7 +6,6 @@ distlib==0.3.8
 Django==4.2.10
 django-adminlte-3==0.1.6
 django-import-export==3.3.7
-django-phonenumber-field==7.3.0
 django-rest-passwordreset==1.4.0
 django_rest_resetpassword==0.1.2
 djangorestframework==3.14.0
@@ -17,14 +16,12 @@ MarkupPy==1.14
 nodeenv==1.8.0
 odfpy==1.4.1
 openpyxl==3.1.2
-phonenumberslite==8.13.30
 pillow==10.2.0
 platformdirs==4.2.0
 pre-commit==3.6.1
 psycopg==3.1.18
 psycopg-binary==3.1.18
 pycryptodome==3.20.0
-pyserial==3.5
 python-dotenv==1.0.1
 pytz==2024.1
 PyYAML==6.0.1
