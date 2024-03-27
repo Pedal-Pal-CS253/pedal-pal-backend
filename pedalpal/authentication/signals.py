@@ -1,8 +1,10 @@
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from authentication.email import send_email
+from django.dispatch import receiver
+from django_rest_passwordreset.signals import reset_password_token_created
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -11,11 +13,10 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
-from django.dispatch import receiver
-
-# from django.urls import reverse
-
-from django_rest_passwordreset.signals import reset_password_token_created
+@receiver(pre_save, sender=settings.AUTH_USER_MODEL)
+def set_is_active(sender, instance=None, **kwargs):
+    if instance.is_superuser:
+        instance.is_active = True
 
 
 @receiver(reset_password_token_created)
