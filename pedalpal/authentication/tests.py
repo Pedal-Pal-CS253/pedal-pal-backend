@@ -16,6 +16,12 @@ class AuthenticationTestCase(APITestCase):
 
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.post("/auth/get_auth_token/", data)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post("/auth/register/", data)
+        self.assertEqual(response.status_code, 400)
+
     def test_login(self):
         data = {
             "email": "test@test.com",
@@ -29,6 +35,11 @@ class AuthenticationTestCase(APITestCase):
         response = self.client.post("/auth/login/", data)
 
         self.assertEqual(response.status_code, 200)
+
+        data["password"] = "wrongpassword"
+        response = self.client.post("/auth/login/", data)
+
+        self.assertEqual(response.status_code, 400)
 
     def test_otp_verification(self):
         data = {
