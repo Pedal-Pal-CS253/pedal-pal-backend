@@ -13,8 +13,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 from django.dispatch import receiver
 
-# from django.urls import reverse
-
 from django_rest_passwordreset.signals import reset_password_token_created
 
 
