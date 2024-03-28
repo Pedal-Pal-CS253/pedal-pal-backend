@@ -34,7 +34,7 @@ class BookNowAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        if request.user.is_subscribed is True and request.user.balance < 0:
+        if request.user.balance < 0:
             return JsonResponse(
                 {
                     "message": "Your wallet has negative balance, please recharge it before starting another ride!"
