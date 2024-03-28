@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append(".")
-
 from rest_framework.test import APITestCase
 from authentication.models import Profile
 from authentication.models import ProfileManager
