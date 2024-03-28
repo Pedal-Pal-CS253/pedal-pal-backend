@@ -6,10 +6,9 @@ from .serializers import PaymentSerializer
 
 class AddPaymentAPI(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-
     def post(self, request, *args, **kwargs):
         user = request.user
-        payment = Payment(user=user, amount=-request.data.get("amount"), status="DEBIT")
+        payment = Payment(user=user, amount=-int(request.data.get("amount")), status="DEBIT")
         payment.save()
         return JsonResponse({"id": payment.id})
 
@@ -29,8 +28,7 @@ class UpdateBalanceAPI(generics.GenericAPIView):
         user = request.user
         user.balance += int(request.data.get("amount"))
         user.save()
-
-        if request.data.get("amount") < 0:
+        if int(request.data.get("amount")) < 0:
             payment = Payment(
                 user=user, amount=request.data.get("amount"), status="DEBIT"
             )
@@ -51,5 +49,5 @@ class GetTransactionsAPI(generics.GenericAPIView):
         user = request.user
         transactions = Payment.objects.filter(user=user)
         serializer = self.serializer_class(transactions, many=True)
-
         return JsonResponse(serializer.data, safe=False)
+    
