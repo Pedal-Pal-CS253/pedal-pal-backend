@@ -12,13 +12,15 @@ class AuthenticationTestCase(APITestCase):
             "phone": "1234567890",
         }
 
+        # check if able to register
         response = self.client.post("/auth/register/", data)
-
         self.assertEqual(response.status_code, 200)
 
+        # check if token generated successfully
         response = self.client.post("/auth/get_auth_token/", data)
         self.assertEqual(response.status_code, 200)
 
+        # register again using same credentials, should give error
         response = self.client.post("/auth/register/", data)
         self.assertEqual(response.status_code, 400)
 
@@ -36,6 +38,7 @@ class AuthenticationTestCase(APITestCase):
 
         self.assertEqual(response.status_code, 200)
 
+        # try logging in with wrong password
         data["password"] = "wrongpassword"
         response = self.client.post("/auth/login/", data)
 
@@ -60,5 +63,6 @@ class AuthenticationTestCase(APITestCase):
         response = self.client.get(f"/auth/verify/1/{otp}/")
         self.assertEqual(response.status_code, 200)
 
+        # try verifying with wrong otp
         response = self.client.get(f"/auth/verify/1/{int(otp)+1}/")
         self.assertEqual(response.status_code, 400)
