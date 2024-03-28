@@ -8,6 +8,7 @@ from rest_framework import status
 from .models import Hub, Cycle, Lock, Ride
 import os
 
+
 class BookingTestCase(APITestCase):
     def set_up(self):
         profile_manager = ProfileManager()
@@ -199,6 +200,7 @@ class ViewHubsTestCase(APITestCase):
 
         self.assertEqual(response.status_code, 200)
 
+
 class BookNowAPITestCase(APITestCase):
     def setUp(self):
         self.hub = Hub.objects.create(
@@ -226,7 +228,7 @@ class BookNowAPITestCase(APITestCase):
         id = self.lock.id ^ key
         data = {"id": id}
         self.client.force_authenticate(user=self.user)
-        response = self.client.post("/booking/book/", data, format='json')
+        response = self.client.post("/booking/book/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Ride.objects.count(), 1)
         self.cycle.refresh_from_db()
@@ -237,7 +239,7 @@ class BookNowAPITestCase(APITestCase):
         self.assertFalse(self.lock.cycle)
         self.user.refresh_from_db()
         self.assertTrue(self.user.is_ride_active())
-        
+
     def test_no_cycle(self):
         invalid_lock = Lock.objects.create(
             arduino_port="COM2",
@@ -249,18 +251,22 @@ class BookNowAPITestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.post("/booking/book/", data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'message': 'Lock has no cycle attached to it'})
-        
+        self.assertEqual(
+            response.json(), {"message": "Lock has no cycle attached to it"}
+        )
+
     def test_book_ride_with_active_ride(self):
         self.user.set_ride_active(True)
         self.assertTrue(self.user.is_ride_active())
         key = int(os.getenv("SECRET_KEY"))
         id = self.lock.id ^ key
-        data = {'id': id}
+        data = {"id": id}
         self.client.force_authenticate(user=self.user)
-        response = self.client.post("/booking/book/", data, format='json')
+        response = self.client.post("/booking/book/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'message': 'User already has an active ride'})
+        self.assertEqual(
+            response.json(), {"message": "User already has an active ride"}
+        )
 
     def test_cycle_already_booked(self):
         other_user = Profile.objects.create(
@@ -274,11 +280,28 @@ class BookNowAPITestCase(APITestCase):
         self.assertFalse(self.user.is_ride_active())
         key = int(os.getenv("SECRET_KEY"))
         id = self.lock.id ^ key
-        data = {'id': id}
+        data = {"id": id}
         self.client.force_authenticate(user=self.user)
-        response = self.client.post("/booking/book/", data, format='json')
+        response = self.client.post("/booking/book/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'message': 'Cycle already booked'})
+        self.assertEqual(response.json(), {"message": "Cycle already booked"})
+
+    def test_user_negative_balance(self):
+        self.user.balance = -1
+        self.user.save()
+        self.assertEqual(self.user.balance, -1)
+        key = int(os.getenv("SECRET_KEY"))
+        id = self.lock.id ^ key
+        data = {"id": id}
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post("/booking/book/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json(),
+            {
+                "message": "Your wallet has negative balance, please recharge it before starting another ride!"
+            },
+        )
 
 
 class EndRideAPITestCase(APITestCase):
@@ -304,17 +327,17 @@ class EndRideAPITestCase(APITestCase):
         )
         self.ride = Ride.objects.create(
             user=self.user,
-            cycle=self.cycle, 
-            start_time=timezone.now(), 
-            start_hub=self.hub
+            cycle=self.cycle,
+            start_time=timezone.now(),
+            start_hub=self.hub,
         )
 
     def test_end_ride(self):
         key = int(os.getenv("SECRET_KEY"))
         id = self.lock.id ^ key
-        data = {'id': id, 'payment_id' : -1}
+        data = {"id": id, "payment_id": -1}
         self.client.force_authenticate(user=self.user)
-        response = self.client.post("/booking/end/", data, format='json')
+        response = self.client.post("/booking/end/", data, format="json")
         print(response.json())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.ride.refresh_from_db()
@@ -331,26 +354,28 @@ class EndRideAPITestCase(APITestCase):
         self.assertFalse(self.user.is_ride_active())
         key = int(os.getenv("SECRET_KEY"))
         id = self.lock.id ^ key
-        data = {'id': id, 'payment_id': -1}
+        data = {"id": id, "payment_id": -1}
         self.client.force_authenticate(user=self.user)
-        response = self.client.post("/booking/end/", data, format='json')
+        response = self.client.post("/booking/end/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'message': 'User does not have an active ride'})
-    
+        self.assertEqual(
+            response.json(), {"message": "User does not have an active ride"}
+        )
+
     def test_no_lock(self):
-        data = {'id': 2, 'payment_id': -1}
+        data = {"id": 2, "payment_id": -1}
         self.client.force_authenticate(user=self.user)
-        response = self.client.post("/booking/end/", data, format='json')
+        response = self.client.post("/booking/end/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'message': 'Invalid lock!'})
-    
+        self.assertEqual(response.json(), {"message": "Invalid lock!"})
+
     def test_lock_not_empty(self):
         self.lock.cycle = self.cycle
         self.lock.save()
         key = int(os.getenv("SECRET_KEY"))
         id = self.lock.id ^ key
-        data = {'id': id, 'payment_id': -1}
+        data = {"id": id, "payment_id": -1}
         self.client.force_authenticate(user=self.user)
-        response = self.client.post("/booking/end/", data, format='json')
+        response = self.client.post("/booking/end/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'message': 'Lock is not empty!'})
+        self.assertEqual(response.json(), {"message": "Lock is not empty!"})
